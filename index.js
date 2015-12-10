@@ -1,0 +1,63 @@
+#! /usr/bin/env node
+
+// Imports
+var temp = require('temp');
+var Fs   = require('fs');
+var Path = require('path');
+var ncp = require('ncp').ncp;
+var rimraf = require('rimraf');
+var combineSCSS = require('scss-combine');
+var execSync = require('child_process').execSync;
+
+// Command line arguments
+var arguments = process.argv.slice(2);
+
+if (arguments.length !== 1) {
+  console.log('Usage: bc-bundle <path>');
+  process.exit(0);
+}
+
+var themePath = arguments[0];
+var themeName = Path.basename(themePath);
+var initialCwd = process.cwd();
+
+// Automatically track and cleanup files at exit
+temp.track();
+
+temp.mkdir(themeName, function(error, tempPath) {
+  console.log('Duplicating theme...');
+
+  ncp(themePath, tempPath, function(error){
+    if (error) {
+      return console.error(error);
+    }
+
+    // Combine styles
+    console.log('Combining styles...');
+    var scssPath = Path.join(tempPath, 'assets', 'scss', 'theme.scss');
+    var combinedScssPath = Path.join(tempPath, 'theme.scss');
+    var combinedScss = combineSCSS(scssPath);
+
+    // Delete uncombined styles
+    var stylesPath = Path.join(tempPath, 'assets', 'scss', '*');
+    rimraf.sync(stylesPath);
+
+    // Write combined styles
+    Fs.writeFileSync(scssPath, combinedScss);
+
+    // Bundle
+    console.log('Bundling theme...');
+    execSync('stencil bundle', {
+      cwd: tempPath
+    });
+
+    var bundlePath = Path.join(tempPath, 'stencil-bundle.zip');
+    var bundleOutputPath = Path.join(initialCwd, themeName + '.zip');
+
+    ncp(bundlePath, bundleOutputPath, function(error){
+      if (error) {
+        return console.error(error);
+      }
+    });
+  });
+});
