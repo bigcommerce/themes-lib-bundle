@@ -17,14 +17,19 @@ if (arguments.length !== 1) {
   process.exit(0);
 }
 
-var themePath = arguments[0];
-var themeName = Path.basename(themePath);
-var initialCwd = process.cwd();
+var themePath = Path.resolve(arguments[0]);
+var packagePath = Path.join(themePath, 'package.json');
+var package = require(packagePath);
+
+var bundleOutputPath = Path.join(
+  process.cwd(),
+  package.name + '-' + package.version + '.zip'
+);
 
 // Automatically track and cleanup files at exit
 temp.track();
 
-temp.mkdir(themeName, function(error, tempPath) {
+temp.mkdir(package.name, function(error, tempPath) {
   console.log('Duplicating theme...');
 
   ncp(themePath, tempPath, function(error){
@@ -52,8 +57,6 @@ temp.mkdir(themeName, function(error, tempPath) {
     });
 
     var bundlePath = Path.join(tempPath, 'stencil-bundle.zip');
-    var bundleOutputPath = Path.join(initialCwd, themeName + '.zip');
-
     ncp(bundlePath, bundleOutputPath, function(error){
       if (error) {
         return console.error(error);
