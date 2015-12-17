@@ -9,7 +9,7 @@
   "dependencies": {
     "ncp": "^2.0.0",
     "rimraf": "^2.4.4",
-    "scss-combine": "bitbucket:pixelunion/scss-combine",
+    "scss-combine": "git+ssh://git@bitbucket.org:pixelunion/scss-combine.git`",
     "temp": "^0.8.3"
   }
 }
