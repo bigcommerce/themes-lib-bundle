@@ -1,6 +1,6 @@
 {
   "name": "bc-bundle",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Bundle a Bigcommerce theme for the marketplace.",
   "repository": "bitbucket:pixelunion/bc-bundle",
   "bin": {
