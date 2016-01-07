@@ -26,6 +26,8 @@ var bundleOutputPath = Path.join(
   package.name + '-' + package.version + '.zip'
 );
 
+var banner = '/*! Theme: '+ package.name + ' |  v' + package.version + ' */\n';
+
 // Automatically track and cleanup files at exit
 temp.track();
 
@@ -41,7 +43,7 @@ temp.mkdir(package.name, function(error, tempPath) {
     console.log('Combining styles...');
     var scssPath = Path.join(tempPath, 'assets', 'scss', 'theme.scss');
     var combinedScssPath = Path.join(tempPath, 'theme.scss');
-    var combinedScss = combineSCSS(scssPath);
+    var combinedScss = banner + combineSCSS(scssPath);
 
     // Delete uncombined styles
     var stylesPath = Path.join(tempPath, 'assets', 'scss', '*');
