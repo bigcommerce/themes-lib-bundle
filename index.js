@@ -20,12 +20,8 @@ if (arguments.length !== 1) {
 var themePath = Path.resolve(arguments[0]);
 var packagePath = Path.join(themePath, 'package.json');
 var package = require(packagePath);
-
-var bundleOutputPath = Path.join(
-  process.cwd(),
-  package.name + '-' + package.version + '.zip'
-);
-
+var bundleFilename = package.name + '-' + package.version + '.zip';
+var bundleOutputPath = Path.join(process.cwd(), bundleFilename);
 var banner = '/*! Theme: '+ package.name + ' |  v' + package.version + ' */\n';
 
 // Automatically track and cleanup files at exit
@@ -58,7 +54,7 @@ temp.mkdir(package.name, function(error, tempPath) {
       cwd: tempPath
     });
 
-    var bundlePath = Path.join(tempPath, 'stencil-bundle.zip');
+    var bundlePath = Path.join(tempPath, bundleFilename);
     ncp(bundlePath, bundleOutputPath, function(error){
       if (error) {
         return console.error(error);
