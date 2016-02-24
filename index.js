@@ -18,16 +18,17 @@ if (arguments.length !== 1) {
 }
 
 var themePath = Path.resolve(arguments[0]);
-var packagePath = Path.join(themePath, 'package.json');
-var package = require(packagePath);
-var bundleFilename = package.name + '-' + package.version + '.zip';
+var configPath = Path.join(themePath, 'config.json');
+var config = require(configPath);
+var bundleFilename = config.name + '-' + config.version + '.zip';
 var bundleOutputPath = Path.join(process.cwd(), bundleFilename);
-var banner = '/*! Theme: '+ package.name + ' |  v' + package.version + ' */\n';
+var banner = '/*! Theme: '+ config.name + ' |  v' + config.version + ' */\n';
 
 // Automatically track and cleanup files at exit
 temp.track();
+console.log('Bundling:', config.name, config.version);
 
-temp.mkdir(package.name, function(error, tempPath) {
+temp.mkdir(config.name, function(error, tempPath) {
   console.log('Duplicating theme...');
 
   if (error) {
