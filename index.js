@@ -30,6 +30,10 @@ temp.track();
 temp.mkdir(package.name, function(error, tempPath) {
   console.log('Duplicating theme...');
 
+  if (error) {
+    return console.error(error);
+  }
+
   ncp(themePath, tempPath, function(error){
     if (error) {
       return console.error(error);
@@ -48,11 +52,14 @@ temp.mkdir(package.name, function(error, tempPath) {
     // Write combined styles
     Fs.writeFileSync(scssPath, combinedScss);
 
+    // Installing dependencies
+    console.log('Installing dependencies...');
+    execSync('npm install', { cwd:tempPath });
+    execSync('jspm install', { cwd:tempPath });
+
     // Bundle
     console.log('Bundling theme...');
-    execSync('stencil bundle', {
-      cwd: tempPath
-    });
+    execSync('stencil bundle', { cwd:tempPath });
 
     var bundlePath = Path.join(tempPath, bundleFilename);
     ncp(bundlePath, bundleOutputPath, function(error){
