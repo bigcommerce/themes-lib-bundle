@@ -71,6 +71,9 @@ temp.mkdir(config.name, function(error, tempPath) {
     rimraf.sync(Path.join(tempPath, 'assets', 'scss', '**/_*.scss'));
     rmdirEmpty(scssPath);
 
+    // Remove .eslintrc to ignore warnings
+    rimraf.sync(Path.join(tempPath, '.eslintrc'));
+
     // Bundle
     console.log('Bundling theme...');
     execSync('stencil bundle', { cwd:tempPath });
