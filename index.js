@@ -28,17 +28,28 @@ function rmdirEmpty(root) {
 // Command line arguments
 var arguments = process.argv.slice(2);
 
-if (arguments.length !== 1) {
-  console.log('Usage: bc-bundle <path>');
+if (arguments.length < 1) {
+  console.log('Usage: bc-bundle <path> [--fast]');
   process.exit(0);
 }
+
+var fast = arguments.indexOf('--fast') !== -1;
+
+// Sets the limit to 512 if fast (maximum value for ncp) otherwise 16 (default value for ncp)
+ncp.limit = fast ? 512 : 16;
 
 var themePath = Path.resolve(arguments[0]);
 var config = require(Path.join(themePath, 'config.json'));
 var bundleFilename = config.name + '-' + config.version + '.zip';
 var bundleOutputPath = Path.join(process.cwd(), bundleFilename);
 var banner = '/*! Theme: '+ config.name + ' v' + config.version + ' */\n';
-console.log('Bundling:', config.name, config.version);
+var startTime = Date.now();
+
+if (fast) {
+  console.log('Bundling (fast):', config.name, config.version);
+} else {
+  console.log('Bundling:', config.name, config.version);
+}
 
 // Automatically track and cleanup files at exit
 temp.track();
@@ -50,10 +61,13 @@ temp.mkdir(config.name, function(error, tempPath) {
   ncp(themePath, tempPath, function(error){
     if (error) return console.error(error);
 
+    // Skip installing dependencies if we're in fast mode. Assume user has already done so
+    if (!fast) {
     // Install dependencies
-    console.log('Installing dependencies...');
-    execSync('npm install', { cwd:tempPath });
-    execSync('jspm install', { cwd:tempPath });
+      console.log('Installing dependencies...');
+      execSync('npm install', { cwd:tempPath });
+      execSync('jspm install', { cwd:tempPath });
+    }
 
     // Combine styles
     console.log('Combining styles...');
@@ -81,6 +95,10 @@ temp.mkdir(config.name, function(error, tempPath) {
     // Save bundled zip
     ncp(Path.join(tempPath, bundleFilename), bundleOutputPath, function(error){
       if (error) return console.error(error);
+
+      var endTime = Date.now();
+
+      console.log('Bundle time:', (endTime - startTime) / 1000.00, 'seconds');
     });
   });
 });
