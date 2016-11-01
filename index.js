@@ -58,7 +58,11 @@ temp.mkdir(config.name, function(error, tempPath) {
   if (error) return console.error(error);
   console.log('Duplicating theme...');
 
-  ncp(themePath, tempPath, function(error){
+  var options = {
+    'filter': function(filepath) { return Path.basename(filepath) !== 'README.md'; }
+  }
+
+  ncp(themePath, tempPath, options, function(error){
     if (error) return console.error(error);
 
     // Skip installing dependencies if we're in fast mode. Assume user has already done so
