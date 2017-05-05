@@ -70,7 +70,6 @@ temp.mkdir(config.name, function(error, tempPath) {
     // Install dependencies
       console.log('Installing dependencies...');
       execSync('npm install', { cwd:tempPath });
-      execSync('jspm install', { cwd:tempPath });
     }
 
     // Combine styles
