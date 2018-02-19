@@ -4,7 +4,7 @@ Bundle a Bigcommerce theme for the marketplace.
 
 ## Installation
 
-`npm install -g git+ssh://git@bitbucket.org:pixelunion/bc-bundle.git`
+`npm install -g pixelunion/bc-bundle`
 
 ## Usage
 
